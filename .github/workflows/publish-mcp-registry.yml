@@ -1,26 +1,28 @@
 name: Publish to MCP Registry
 
 on:
-  release:
-    types: [published]
+    release:
+        types: [published]
 
 permissions:
-  contents: read
+    contents: read
+    id-token: write
 
 jobs:
-  publish:
-    name: Publish
-    runs-on: ubuntu-latest
+    publish:
+        name: Publish
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Install mcp-publisher
-        run: |
-          curl -sL https://registry.modelcontextprotocol.io/cli/linux/amd64 -o mcp-publisher
-          chmod +x mcp-publisher
+            - name: Install mcp-publisher
+              run: |
+                  curl -sL https://registry.modelcontextprotocol.io/cli/linux/amd64 -o mcp-publisher
+                  chmod +x mcp-publisher
 
-      - name: Publish to MCP Registry
-        run: ./mcp-publisher publish
-        env:
-          MCP_REGISTRY_TOKEN: ${{ secrets.MCP_REGISTRY_TOKEN }}
+            - name: Authenticate with MCP Registry
+              run: ./mcp-publisher login github-oidc
+
+            - name: Publish to MCP Registry
+              run: ./mcp-publisher publish
