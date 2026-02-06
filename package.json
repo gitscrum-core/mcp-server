@@ -1,0 +1,89 @@
+{
+    "name": "@gitscrum-studio/mcp-server",
+    "version": "1.0.0",
+    "description": "Model Context Protocol server for GitScrum - Enable AI assistants to manage tasks, track time, run sprints, and handle client relationships through natural language",
+    "type": "module",
+    "main": "dist/index.js",
+    "bin": {
+        "gitscrum-mcp": "dist/index.js"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "start": "node dist/index.js",
+        "prepare": "npm run build",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage",
+        "inspector": "npx @modelcontextprotocol/inspector node dist/index.js",
+        "prepublishOnly": "npm run build && npm test"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "gitscrum",
+        "project-management",
+        "task-management",
+        "time-tracking",
+        "sprint",
+        "sprints",
+        "kanban",
+        "scrum",
+        "agile",
+        "ai",
+        "ai-assistant",
+        "claude",
+        "anthropic",
+        "copilot",
+        "cursor",
+        "llm",
+        "automation",
+        "productivity",
+        "crm",
+        "invoicing",
+        "proposals"
+    ],
+    "author": {
+        "name": "GitScrum",
+        "email": "hello@gitscrum.com",
+        "url": "https://gitscrum.com"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gitscrum-core/mcp-server.git"
+    },
+    "homepage": "https://github.com/gitscrum-core/mcp-server#readme",
+    "bugs": {
+        "url": "https://github.com/gitscrum-core/mcp-server/issues"
+    },
+    "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/gitscrum-core"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "@vitest/coverage-v8": "^4.0.18",
+        "@vitest/ui": "^4.0.18",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.0",
+        "vitest": "^4.0.18"
+    }
+}
