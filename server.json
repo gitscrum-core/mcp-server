@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gitscrum-core/mcp-server",
+  "name": "com.gitscrum/mcp",
   "description": "MCP server for GitScrum — manage tasks, sprints, time tracking, and client workflows via AI",
   "repository": {
     "url": "https://github.com/gitscrum-core/mcp-server",
     "source": "github"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@gitscrum-studio/mcp-server",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "transport": {
         "type": "stdio"
       },

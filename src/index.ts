@@ -44,7 +44,7 @@ const serverInstructions = `GitScrum project management. Stateless MCP - always 
 const server = new Server(
   {
     name: "gitscrum",
-    version: "1.0.1",
+    version: "1.0.2",
   },
   {
     capabilities: {

@@ -6,7 +6,6 @@ on:
 
 permissions:
     contents: read
-    id-token: write
 
 jobs:
     publish:
@@ -22,7 +21,7 @@ jobs:
                   chmod +x mcp-publisher
 
             - name: Authenticate with MCP Registry
-              run: ./mcp-publisher login github-oidc
+              run: ./mcp-publisher login dns --domain gitscrum.com --algorithm ed25519 --private-key ${{ secrets.MCP_SIGNING_KEY }}
 
             - name: Publish to MCP Registry
               run: ./mcp-publisher publish
