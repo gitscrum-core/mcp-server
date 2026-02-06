@@ -5,6 +5,13 @@ All notable changes to the GitScrum Studio MCP Server will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-02-06
+
+### Added
+- **MCP Registry:** Published to the [Official MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.gitscrum-core/mcp-server`
+- Added `mcpName` field to `package.json` for MCP Registry verification
+- Added `server.json` for MCP Registry publishing
+
 ## [1.0.0] - 2026-02-06
 
 ### Published
@@ -77,4 +84,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.1]: https://github.com/gitscrum-core/mcp-server/releases/tag/v1.0.1
 [1.0.0]: https://github.com/gitscrum-core/mcp-server/releases/tag/v1.0.0

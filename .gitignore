@@ -30,5 +30,10 @@ test-results.txt
 tsc-result.txt
 vitest-output.txt
 
+# MCP Registry publisher
+mcp-publisher.exe
+mcp-publisher
+.mcpregistry_*
+
 # Test coverage
 coverage/

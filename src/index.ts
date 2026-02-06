@@ -44,7 +44,7 @@ const serverInstructions = `GitScrum project management. Stateless MCP - always 
 const server = new Server(
   {
     name: "gitscrum",
-    version: "1.0.0",
+    version: "1.0.1",
   },
   {
     capabilities: {
@@ -166,7 +166,7 @@ async function main(): Promise<void> {
 
   // Log startup info to stderr (stdout is reserved for MCP protocol)
   console.error("╔═══════════════════════════════════════════════╗");
-  console.error("║       GitScrum Studio MCP Server v1.0.0       ║");
+  console.error("║       GitScrum Studio MCP Server v1.0.1       ║");
   console.error("╚═══════════════════════════════════════════════╝");
   console.error("");
   console.error(`  API:   ${process.env.GITSCRUM_API_URL || "https://services.gitscrum.com"}`);
