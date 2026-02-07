@@ -12,7 +12,7 @@
  * - Full TypeScript support
  *
  * @module @gitscrum-studio/mcp-server/client
- * @author GitScrum <hello@gitscrum.com>
+ * @author GitScrum <support@gitscrum.com>
  * @license MIT
  */
 
@@ -29,9 +29,27 @@ export interface ApiResponse<T> {
   };
 }
 
+/**
+ * Standard API error response from GitScrum API
+ * All errors follow this format with HTTP status codes:
+ * - 401: Unauthorized (token issues)
+ * - 402: Payment Required (PRO features)
+ * - 403: Forbidden (permission denied)
+ * - 404: Not Found
+ * - 409: Conflict (validation, business rules)
+ * - 429: Rate Limited
+ * - 500: Server Error
+ */
 interface ApiError {
+  error_code?: string;
   message: string;
   errors?: Record<string, string[]>;
+  // 402 specific
+  feature?: string;
+  upgrade_url?: string;
+  // 429 specific
+  retry_after?: number;
+  plan?: string;
 }
 
 export class GitScrumClient {
@@ -102,56 +120,93 @@ export class GitScrumClient {
 
     if (!response.ok) {
       const errorData = (await response.json().catch(() => ({}))) as ApiError;
+      const errorCode = errorData.error_code || "";
       const errorMessage = errorData.message || `API Error: ${response.status}`;
-      
-      // Handle 400 Bad Request - validation or invalid input
-      if (response.status === 400) {
-        throw new Error(`Invalid request: ${errorMessage}`);
-      }
       
       // Handle 401 Unauthorized - authentication issue
       if (response.status === 401) {
-        throw new Error("Session expired. Authentication required. Use login to reconnect.");
+        // Use error_code for specific auth errors
+        if (errorCode === "TOKEN_EXPIRED" || errorCode === "SESSION_EXPIRED") {
+          throw new Error("Session expired. Use auth_login to reconnect.");
+        }
+        if (errorCode === "TOKEN_INVALID" || errorCode === "TOKEN_MISSING") {
+          throw new Error("Authentication required. Use auth_login to authenticate.");
+        }
+        if (errorCode === "MFA_REQUIRED") {
+          throw new Error("Multi-factor authentication required.");
+        }
+        throw new Error("Authentication required. Use auth_login to authenticate.");
       }
 
-      // Handle 403 Forbidden
+      // Handle 402 Payment Required - PRO feature or subscription issue
+      if (response.status === 402) {
+        const feature = errorData.feature || "this feature";
+        if (errorCode === "PRO_FEATURE_REQUIRED") {
+          throw new Error(`PRO feature required: ${feature}. Upgrade at ${errorData.upgrade_url || "https://gitscrum.com/pricing"}`);
+        }
+        if (errorCode === "SUBSCRIPTION_EXPIRED") {
+          throw new Error(`Subscription expired. Renew at ${errorData.upgrade_url || "https://gitscrum.com/pricing"}`);
+        }
+        throw new Error(`Payment required: ${errorMessage}`);
+      }
+
+      // Handle 403 Forbidden - permission denied
       if (response.status === 403) {
+        // Use error_code for specific permission messages
+        if (errorCode === "CLIENT_READ_ONLY") {
+          throw new Error("Clients have read-only access to this resource.");
+        }
+        if (errorCode === "OWNER_ONLY") {
+          throw new Error("Only workspace owners can perform this action.");
+        }
+        if (errorCode === "ADMIN_ONLY" || errorCode === "MANAGER_ONLY") {
+          throw new Error(`Access denied: ${errorMessage}`);
+        }
         throw new Error(`Access denied: ${errorMessage}`);
       }
       
       // Handle 404 Not Found
       if (response.status === 404) {
-        throw new Error("Resource not found or was deleted.");
+        // Use error_code for specific resource type
+        const resourceMessages: Record<string, string> = {
+          TASK_NOT_FOUND: "Task not found or was deleted.",
+          PROJECT_NOT_FOUND: "Project not found or was deleted.",
+          WORKSPACE_NOT_FOUND: "Workspace not found or was deleted.",
+          SPRINT_NOT_FOUND: "Sprint not found or was deleted.",
+          USER_NOT_FOUND: "User not found.",
+          USER_STORY_NOT_FOUND: "User story not found or was deleted.",
+        };
+        throw new Error(resourceMessages[errorCode] || "Resource not found or was deleted.");
       }
       
-      // Handle 409 Conflict - resource conflict (e.g., duplicate, pending operation)
+      // Handle 409 Conflict - validation errors and business rule violations
       if (response.status === 409) {
+        // VALIDATION_FAILED includes field-level errors
+        if (errorCode === "VALIDATION_FAILED" && errorData.errors) {
+          const fieldErrors = Object.entries(errorData.errors)
+            .map(([field, msgs]) => `${field}: ${msgs.join(", ")}`)
+            .join("; ");
+          throw new Error(`Validation failed: ${fieldErrors}`);
+        }
+        // Other conflict errors
         throw new Error(`Conflict: ${errorMessage}`);
       }
       
-      // Handle 422 Unprocessable Entity - validation errors
-      if (response.status === 422) {
-        throw new Error(JSON.stringify({ 
-          error: "validation_failed", 
-          message: errorMessage, 
-          validation_errors: errorData.errors 
-        }));
-      }
-      
-      // Handle 429 Too Many Requests - MCP rate limit exceeded
+      // Handle 429 Too Many Requests - rate limit exceeded
       if (response.status === 429) {
+        const retryAfter = errorData.retry_after || parseInt(response.headers.get("Retry-After") || "60");
         throw new Error(JSON.stringify({
-          error: "rate_limit_exceeded",
-          limit: response.headers.get("X-MCP-RateLimit-Limit"),
-          remaining: response.headers.get("X-MCP-RateLimit-Remaining"),
-          reset: response.headers.get("X-MCP-RateLimit-Reset"),
-          upgrade_url: "https://gitscrum.com/pricing"
+          error_code: errorCode || "RATE_LIMIT_EXCEEDED",
+          message: errorMessage,
+          retry_after: retryAfter,
+          plan: errorData.plan,
+          upgrade_url: errorData.upgrade_url || "https://gitscrum.com/pricing"
         }));
       }
       
       // Handle 500+ Server Errors
       if (response.status >= 500) {
-        throw new Error(`Server error: ${errorMessage}`);
+        throw new Error(`Server error: ${errorMessage}. Please try again later.`);
       }
 
       throw new Error(errorMessage);
