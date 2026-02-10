@@ -17,6 +17,47 @@
 
 <br/>
 
+<table>
+<tr>
+<td width="50%">
+
+### ⚡ Hosted (Recommended)
+
+**Zero install. Works everywhere.**
+
+```
+https://mcp.gitscrum.com/sse
+```
+
+SSE-based server hosted on AWS. Just add URL + token to your AI client.
+
+**Best for:** Claude Desktop, Cursor, Windsurf, any SSE-compatible client.
+
+[→ Setup Guide](docs/HOSTED.md)
+
+</td>
+<td width="50%">
+
+### 📦 Local (npm)
+
+**Self-hosted via npx.**
+
+```bash
+npx -y @gitscrum-studio/mcp-server
+```
+
+Runs locally via stdio transport. Requires Node.js 18+.
+
+**Best for:** VS Code, GitHub Copilot, offline environments.
+
+[→ Local Setup](#quick-start)
+
+</td>
+</tr>
+</table>
+
+---
+
 ## Overview
 
 GitScrum Studio MCP Server connects AI assistants to your [GitScrum](https://gitscrum.com) workspace via the [Model Context Protocol](https://modelcontextprotocol.io). It gives Claude, GitHub Copilot, Cursor, and any MCP-compatible client full operational access to your project management stack — tasks, sprints, time tracking, user stories, epics, kanban workflows, team discussions, wiki, notes, client CRM, invoicing, proposals, budget tracking, analytics dashboards, standup reports, and activity feeds.
@@ -189,6 +230,7 @@ Found a vulnerability? Report privately to **security@gitscrum.com**.
 
 | | |
 |:--|:--|
+| **[Hosted Server](docs/HOSTED.md)** | SSE setup for Claude, Cursor, Windsurf, and more |
 | **[Usage Guide](docs/USAGE.md)** | Practical examples and common workflows |
 | **[Tools Reference](docs/TOOLS.md)** | All 29 tools with parameters and response shapes |
 | **[Per-Tool Guides](docs/tools/)** | Deep-dive into each tool module |
