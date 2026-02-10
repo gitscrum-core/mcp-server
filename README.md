@@ -3,17 +3,22 @@
 </p>
 
 <h1 align="center">GitScrum MCP Server: Your AI Agent as a Project Manager 🚀</h1>
-
-<p align="center">
-  Turn your AI Agent into a full-scale Project Manager.<br/>
- The Official Model Context Protocol (MCP) server for GitScrum provides AI assistants (Claude, Cursor, Windsurf, Copilot) with deep context and operational access to your entire project stack.
-</p>
-
 <p align="center">
   <a href="https://www.npmjs.com/package/@gitscrum-studio/mcp-server"><img src="https://img.shields.io/npm/v/@gitscrum-studio/mcp-server?style=flat-square&color=000" alt="npm version"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-000?style=flat-square" alt="MIT License"></a>
   <a href="https://github.com/gitscrum-core/mcp-server/actions"><img src="https://img.shields.io/badge/tests-378_passing-000?style=flat-square" alt="Tests"></a>
 </p>
+
+<p align="center">
+  Turn your AI Agent into a full-scale Project Manager.<br/>
+ The Official Model Context Protocol (MCP) server for GitScrum provides AI assistants (Claude, Cursor, Windsurf, Copilot) with deep context and operational access to your entire project stack.
+
+</p>
+
+<div align="center">
+    <img src="https://github.com/user-attachments/assets/adbcac95-f1cb-4ad3-852c-24120bc13de6" alt="GitScrum MCP Server">
+</div>
+
 
 <br/>
 
