@@ -17,43 +17,28 @@ https://mcp.gitscrum.com/sse
 
 ## Authentication
 
-GitScrum uses **Device Flow** for secure authentication. For SSE clients, you need to obtain the token first.
+| Transport | How to authenticate |
+|:----------|:-------------------|
+| **stdio** (local) | Just say *"Login to GitScrum"* — automatic Device Flow |
+| **SSE** (hosted) | Requires token upfront — see below |
 
-### Step 1: Get your token (one-time setup)
+### Why the difference?
 
-Run the local MCP server to authenticate:
+SSE connections send the token in the HTTP header **before** connecting. The server can't prompt for login mid-connection like stdio can.
+
+### Getting your token for SSE clients
+
+Run this command once to authenticate and get your token:
 
 ```bash
-npx -y @gitscrum-studio/mcp-server
+npx -y @gitscrum-studio/mcp-server --auth
 ```
-
-When prompted, tell your AI: *"Login to GitScrum"*
 
 1. Open the provided URL in your browser
 2. Authorize the connection
-3. The token is saved at:
+3. Copy the token printed in the terminal
 
-| OS | Path |
-|:---|:-----|
-| macOS/Linux | `~/.gitscrum/credentials.json` |
-| Windows | `%USERPROFILE%\.gitscrum\credentials.json` |
-
-### Step 2: Copy the token
-
-Open the credentials file and copy the `access_token` value:
-
-```json
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGci...",
-  "token_type": "Bearer"
-}
-```
-
-### Step 3: Configure your AI client
-
-Use the token in your SSE configuration (see examples below).
-
-> **Note:** The token is long-lived. You only need to do this once per device.
+> **Note:** Token is long-lived. One-time setup per device.
 
 ---
 
