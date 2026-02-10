@@ -21,9 +21,14 @@ import {
   ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
+import { createRequire } from "module";
 import { GitScrumClient } from "./client/GitScrumClient.js";
 import { initializeToolModules } from "./tools/shared/initModules.js";
 import { getAllTools, routeToolCall } from "./tools/shared/toolRegistry.js";
+
+// Load package.json for version info
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 
 // =============================================================================
 // INITIALIZATION
@@ -165,8 +170,12 @@ async function main(): Promise<void> {
   await server.connect(transport);
 
   // Log startup info to stderr (stdout is reserved for MCP protocol)
+  const version = `v${pkg.version}`;
+  const title = `GitScrum Studio MCP Server ${version}`;
+  const padding = Math.max(0, 45 - title.length);
+  const paddedTitle = " ".repeat(Math.floor(padding / 2)) + title + " ".repeat(Math.ceil(padding / 2));
   console.error("╔═══════════════════════════════════════════════╗");
-  console.error("║       GitScrum Studio MCP Server v1.0.1       ║");
+  console.error(`║${paddedTitle}║`);
   console.error("╚═══════════════════════════════════════════════╝");
   console.error("");
   console.error(`  API:   ${process.env.GITSCRUM_API_URL || "https://services.gitscrum.com"}`);

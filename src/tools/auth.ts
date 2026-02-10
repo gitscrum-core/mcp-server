@@ -98,7 +98,6 @@ export async function handleAuthTool(
         return authSuccess({
           status: "pending",
           verification_url: deviceInfo.verification_uri_complete,
-          user_code: deviceInfo.user_code,
           expires_in_minutes: Math.round(deviceInfo.expires_in / 60),
           instructions: [
             "Open the verification URL in your browser",
