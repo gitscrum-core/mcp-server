@@ -15,34 +15,52 @@ https://mcp.gitscrum.com/sse
 
 ---
 
-## Get Your API Token
+## Authentication
 
-GitScrum uses **Device Flow** authentication — secure, no credentials shared with MCP.
+GitScrum uses **Device Flow** for secure authentication. For SSE clients, you need to obtain the token first.
 
-### How it works
+### Step 1: Get your token (one-time setup)
 
-1. Configure your AI client with the hosted URL (see below)
-2. Tell your AI assistant: *"Login to GitScrum"*
-3. Open the provided URL in your browser
-4. Authorize the connection
-5. The token is stored automatically
+Run the local MCP server to authenticate:
 
-The token is saved locally and reused across sessions. You only need to authenticate once per device.
+```bash
+npx -y @gitscrum-studio/mcp-server
+```
 
-### Manual token retrieval
+When prompted, tell your AI: *"Login to GitScrum"*
 
-If your client requires the token upfront:
+1. Open the provided URL in your browser
+2. Authorize the connection
+3. The token is saved at:
 
-1. Run the local MCP server: `npx -y @gitscrum-studio/mcp-server`
-2. Complete the Device Flow authentication
-3. The token is stored at:
-   - **macOS/Linux:** `~/.gitscrum/credentials.json`
-   - **Windows:** `%USERPROFILE%\.gitscrum\credentials.json`
-4. Copy the `access_token` value for use in SSE clients
+| OS | Path |
+|:---|:-----|
+| macOS/Linux | `~/.gitscrum/credentials.json` |
+| Windows | `%USERPROFILE%\.gitscrum\credentials.json` |
+
+### Step 2: Copy the token
+
+Open the credentials file and copy the `access_token` value:
+
+```json
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGci...",
+  "token_type": "Bearer"
+}
+```
+
+### Step 3: Configure your AI client
+
+Use the token in your SSE configuration (see examples below).
+
+> **Note:** The token is long-lived. You only need to do this once per device.
 
 ---
 
 ## Client Configuration
+
+> **SSE clients** require the token from Step 2 above.  
+> **stdio clients** (VS Code, GitHub Copilot) handle authentication automatically via Device Flow.
 
 ### Claude Desktop
 
@@ -54,14 +72,29 @@ Edit the configuration file:
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | Linux | `~/.config/Claude/claude_desktop_config.json` |
 
+**Option 1: Hosted (SSE)** — Use token from Step 2
+
 ```json
 {
   "mcpServers": {
     "gitscrum": {
       "url": "https://mcp.gitscrum.com/sse",
       "headers": {
-        "Authorization": "Bearer YOUR_GITSCRUM_TOKEN"
+        "Authorization": "Bearer YOUR_TOKEN_FROM_STEP_2"
       }
+    }
+  }
+}
+```
+
+**Option 2: Local (stdio)** — Auto Device Flow, no token needed
+
+```json
+{
+  "mcpServers": {
+    "gitscrum": {
+      "command": "npx",
+      "args": ["-y", "@gitscrum-studio/mcp-server"]
     }
   }
 }
@@ -73,7 +106,7 @@ Restart Claude Desktop after saving.
 
 ### Claude Code (CLI)
 
-Add to your MCP configuration:
+**Option 1: Hosted (SSE)**
 
 ```json
 {
@@ -82,29 +115,21 @@ Add to your MCP configuration:
       "transport": "sse",
       "url": "https://mcp.gitscrum.com/sse",
       "headers": {
-        "Authorization": "Bearer YOUR_GITSCRUM_TOKEN"
+        "Authorization": "Bearer YOUR_TOKEN_FROM_STEP_2"
       }
     }
   }
 }
 ```
 
-Or set via environment:
-
-```bash
-export GITSCRUM_TOKEN="your_token_here"
-```
-
-Then configure:
+**Option 2: Local (stdio)** — Auto Device Flow
 
 ```json
 {
   "mcpServers": {
     "gitscrum": {
-      "url": "https://mcp.gitscrum.com/sse",
-      "headers": {
-        "Authorization": "Bearer ${GITSCRUM_TOKEN}"
-      }
+      "command": "npx",
+      "args": ["-y", "@gitscrum-studio/mcp-server"]
     }
   }
 }
@@ -148,7 +173,7 @@ Or add to VS Code settings (`settings.json`):
 
 Cursor supports both SSE and stdio transports.
 
-**Option 1: Hosted (SSE)** — Recommended
+**Option 1: Hosted (SSE)**
 
 Open Cursor Settings → MCP Servers → Add:
 
@@ -157,7 +182,7 @@ Open Cursor Settings → MCP Servers → Add:
   "gitscrum": {
     "url": "https://mcp.gitscrum.com/sse",
     "headers": {
-      "Authorization": "Bearer YOUR_GITSCRUM_TOKEN"
+      "Authorization": "Bearer YOUR_TOKEN_FROM_STEP_2"
     }
   }
 }
@@ -180,6 +205,8 @@ Open Cursor Settings → MCP Servers → Add:
 
 Windsurf uses SSE transport natively.
 
+**Option 1: Hosted (SSE)**
+
 Open Settings → AI → MCP Configuration:
 
 ```json
@@ -188,20 +215,33 @@ Open Settings → AI → MCP Configuration:
     "gitscrum": {
       "serverUrl": "https://mcp.gitscrum.com/sse",
       "headers": {
-        "Authorization": "Bearer YOUR_GITSCRUM_TOKEN"
+        "Authorization": "Bearer YOUR_TOKEN_FROM_STEP_2"
       }
     }
   }
 }
 ```
 
-Or edit `~/.windsurf/mcp.json` directly.
+**Option 2: Local (stdio)** — Auto Device Flow
+
+Edit `~/.windsurf/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "gitscrum": {
+      "command": "npx",
+      "args": ["-y", "@gitscrum-studio/mcp-server"]
+    }
+  }
+}
+```
 
 ---
 
 ### Antigravity
 
-Add to your Antigravity MCP configuration:
+**Option 1: Hosted (SSE)**
 
 ```json
 {
@@ -211,8 +251,21 @@ Add to your Antigravity MCP configuration:
       "url": "https://mcp.gitscrum.com/sse",
       "auth": {
         "type": "bearer",
-        "token": "YOUR_GITSCRUM_TOKEN"
+        "token": "YOUR_TOKEN_FROM_STEP_2"
       }
+    }
+  }
+}
+```
+
+**Option 2: Local (stdio)** — Auto Device Flow
+
+```json
+{
+  "servers": {
+    "gitscrum": {
+      "command": "npx",
+      "args": ["-y", "@gitscrum-studio/mcp-server"]
     }
   }
 }
@@ -234,7 +287,7 @@ Any MCP client supporting SSE transport can connect:
 Example with curl (handshake only):
 
 ```bash
-curl -N -H "Authorization: Bearer YOUR_TOKEN" \
+curl -N -H "Authorization: Bearer YOUR_TOKEN_FROM_STEP_2" \
      -H "Accept: text/event-stream" \
      https://mcp.gitscrum.com/sse
 ```
