@@ -17,17 +17,28 @@ https://mcp.gitscrum.com/sse
 
 ## Get Your API Token
 
-Before configuring any client, you need a GitScrum API token:
+GitScrum uses **Device Flow** authentication — secure, no credentials shared with MCP.
 
-1. Go to [GitScrum Studio](https://studio.gitscrum.com)
-2. Navigate to **Settings → API Tokens**
-3. Click **Create Token**
-4. Copy the token (you won't see it again)
+### How it works
 
-Alternatively, use **Device Flow** authentication:
-- Tell your AI assistant: *"Login to GitScrum"*
-- Open the provided URL and authorize
-- The token is stored automatically
+1. Configure your AI client with the hosted URL (see below)
+2. Tell your AI assistant: *"Login to GitScrum"*
+3. Open the provided URL in your browser
+4. Authorize the connection
+5. The token is stored automatically
+
+The token is saved locally and reused across sessions. You only need to authenticate once per device.
+
+### Manual token retrieval
+
+If your client requires the token upfront:
+
+1. Run the local MCP server: `npx -y @gitscrum-studio/mcp-server`
+2. Complete the Device Flow authentication
+3. The token is stored at:
+   - **macOS/Linux:** `~/.gitscrum/credentials.json`
+   - **Windows:** `%USERPROFILE%\.gitscrum\credentials.json`
+4. Copy the `access_token` value for use in SSE clients
 
 ---
 
