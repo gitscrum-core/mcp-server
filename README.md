@@ -2,7 +2,7 @@
   <img src="https://site-assets.gitscrum.com/vscode/gitscrum-white.png" alt="GitScrum" width="160"/>
 </p>
 
-<h1 align="center">GitScrum Studio MCP Server</h1>
+<h1 align="center">GitScrum MCP Server: Your AI Agent as a Project Manager 🚀</h1>
 
 <p align="center">
   Model Context Protocol server for GitScrum.<br/>
