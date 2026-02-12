@@ -33,6 +33,36 @@ const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 
 // =============================================================================
+// INITIALIZATION
+// =============================================================================
+
+/** GitScrum API client instance */
+const client = new GitScrumClient();
+
+// Initialize tool registry
+initializeToolModules();
+
+/**
+ * Server instructions - minimal, let tools speak for themselves
+ */
+const serverInstructions = `GitScrum project management. Stateless MCP - always provide required parameters.`.trim();
+
+/** MCP Server instance with capabilities declaration */
+const server = new Server(
+  {
+    name: "gitscrum",
+    version: "1.0.2",
+  },
+  {
+    capabilities: {
+      tools: {},
+      resources: {},
+    },
+    instructions: serverInstructions,
+  }
+);
+
+// =============================================================================
 // CLI FLAGS
 // =============================================================================
 
@@ -142,36 +172,6 @@ async function runAuthFlow(): Promise<void> {
   
   throw new Error("Authorization timed out. Please try again.");
 }
-
-// =============================================================================
-// INITIALIZATION
-// =============================================================================
-
-/** GitScrum API client instance */
-const client = new GitScrumClient();
-
-// Initialize tool registry
-initializeToolModules();
-
-/**
- * Server instructions - minimal, let tools speak for themselves
- */
-const serverInstructions = `GitScrum project management. Stateless MCP - always provide required parameters.`.trim();
-
-/** MCP Server instance with capabilities declaration */
-const server = new Server(
-  {
-    name: "gitscrum",
-    version: "1.0.2",
-  },
-  {
-    capabilities: {
-      tools: {},
-      resources: {},
-    },
-    instructions: serverInstructions,
-  }
-);
 
 // =============================================================================
 // TOOL REGISTRATION
