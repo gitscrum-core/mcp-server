@@ -222,6 +222,13 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         name: "Workspaces",
         description: "List of workspaces the user has access to",
       },
+      {
+        uri: "gitscrum://mcp/manifest",
+        mimeType: "application/json",
+        name: "Server Manifest",
+        description:
+          "Read-only manifest of all tools and their action-level operations. Useful for inspection, diffing across versions, and understanding the full capability surface without executing anything.",
+      },
     ],
   };
 });
@@ -256,6 +263,49 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
             uri,
             mimeType: "application/json",
             text: JSON.stringify(workspaces, null, 2),
+          },
+        ],
+      };
+    }
+
+    if (uri === "gitscrum://mcp/manifest") {
+      const tools = getAllTools();
+      const manifest: Record<string, unknown> = {
+        version: pkg.version,
+        generated_at: new Date().toISOString(),
+        tools: {} as Record<string, unknown>,
+      };
+
+      const toolMap = manifest.tools as Record<string, unknown>;
+
+      for (const tool of tools) {
+        const schema = tool.inputSchema as {
+          properties?: Record<string, { type?: string; enum?: string[] }>;
+        };
+        const props = schema?.properties || {};
+
+        // Extract action-level operations from the action or report enum
+        const actionEnum = props.action?.enum || props.report?.enum || null;
+        const dispatchKey = props.action?.enum
+          ? "action"
+          : props.report?.enum
+            ? "report"
+            : null;
+
+        toolMap[tool.name] = {
+          description: (tool.description || "").split("\n")[0],
+          ...(dispatchKey && { dispatch_key: dispatchKey }),
+          ...(actionEnum && { operations: actionEnum }),
+          annotations: tool.annotations || {},
+        };
+      }
+
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: "application/json",
+            text: JSON.stringify(manifest, null, 2),
           },
         ],
       };
