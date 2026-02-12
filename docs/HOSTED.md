@@ -369,7 +369,7 @@ Response:
 {
   "status": "ok",
   "server": "gitscrum",
-  "version": "1.0.4"
+  "version": "1.0.7"
 }
 ```
 

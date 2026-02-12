@@ -1,6 +1,6 @@
 {
     "name": "@gitscrum-studio/mcp-server",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "mcpName": "com.gitscrum/mcp",
     "description": "Model Context Protocol server for GitScrum - Enable AI assistants to manage tasks, track time, run sprints, and handle client relationships through natural language",
     "type": "module",
