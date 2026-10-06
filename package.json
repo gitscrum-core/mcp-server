@@ -84,7 +84,8 @@
         "npm": ">=8.0.0"
     },
     "dependencies": {
-        "@modelcontextprotocol/sdk": "^1.0.0"
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "@vurb/core": "file:../../Vinkius/VinkiusLabs/vurb-ts/packages/core"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",

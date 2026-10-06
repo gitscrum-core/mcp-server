@@ -1,163 +1,64 @@
 /**
- * Analytics/Dashboard MCP Tool
- * 
- * STATELESS: Returns API data directly. No business logic or formatting.
+ * Analytics — Fluent API + MVA
+ *
+ * ✅ .fromModel() — zero-boilerplate input from Models
+ * ✅ .proxy() — direct API endpoint mapping
  */
-import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import type { GitScrumClient } from "../client/GitScrumClient.js";
-import { 
-  executeAction, 
-  success, 
-  required,
-  type ActionHandlerMap,
-  type ToolResponse
-} from "./shared/actionHandler.js";
 
-// ============================================================================
-// Tool Registration
-// ============================================================================
+import { f } from '../context.js';
+import { AnalyticsModel } from '../models/AnalyticsModel.js';
 
-export function registerAnalyticsTools(): Tool[] {
-  return [
-    {
-      name: "analytics",
-      description: [
-        "Analytics. Reports: pulse (health), risks, flow (WIP), age, activity, overview, health, blockers, command_center, time_entries.",
-        "",
-        "All reports require company_slug (get from 'workspace' tool action 'list').",
-        "overview/health/blockers/command_center/time_entries are Manager Dashboard reports.",
-      ].join("\n"),
-      inputSchema: {
-        type: "object" as const,
-        properties: {
-          report: { 
-            type: "string", 
-            enum: ["pulse", "risks", "flow", "age", "activity", "overview", "health", "blockers", "command_center", "time_entries"], 
-            description: "Which analytics report to get (REQUIRED)" 
-          },
-          company_slug: { 
-            type: "string", 
-            description: "Workspace slug (ALWAYS REQUIRED)" 
-          },
-          view: { 
-            type: "string", 
-            enum: ["all", "active", "overdue"], 
-            description: "For 'pulse' report: filter view (default: all)" 
-          },
-          period: { 
-            type: "string", 
-            enum: ["today", "this-week", "this-month", "last-30-days"], 
-            description: "For 'pulse' report: time period (default: this-week)" 
-          },
-          filter: { 
-            type: "string", 
-            enum: ["all", "blocked", "unassigned", "stale", "aging"], 
-            description: "For 'risks' report: filter by risk type (default: all)" 
-          },
-          severity: { 
-            type: "string", 
-            enum: ["all", "critical", "warning", "info"], 
-            description: "For 'risks' report: filter by severity (default: all)" 
-          },
-          days: { 
-            type: "number", 
-            description: "For 'flow' report: number of days (default: 30, max: 90)" 
-          },
-          time_filter: { 
-            type: "string", 
-            enum: ["today", "this_week", "billable", "non_billable"], 
-            description: "For 'time_entries' report: filter type (default: today)" 
-          },
-        },
-        required: ["report", "company_slug"],
-      },
-      annotations: { title: "Analytics & Reports", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
-    },
-  ];
-}
+const analytics = f.router('analytics')
+  .describe('Project analytics and intelligence reports — pulse, risks, flow, health, blockers')
+  .tags('analytics');
 
-// ============================================================================
-// Types
-// ============================================================================
+export const analyticsPulse = analytics.query('pulse')
+  .describe('Real-time project pulse — recent activity summary')
+  .stale()
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/pulse');
 
-interface AnalyticsArgs {
-  report: string;
-  company_slug: string;
-  view?: string;
-  period?: string;
-  filter?: string;
-  severity?: string;
-  days?: number;
-  time_filter?: string;
-}
+export const analyticsRisks = analytics.query('risks')
+  .describe('Risk analysis — overdue tasks, stale items, bottlenecks')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/risks');
 
-// ============================================================================
-// Action Handlers - STATELESS: Just pass data through
-// ============================================================================
+export const analyticsFlow = analytics.query('flow')
+  .describe('Workflow flow metrics — cycle time, throughput')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/reports/cumulative-flow');
 
-const analyticsHandlers: ActionHandlerMap<AnalyticsArgs> = {
-  pulse: async (client, args) => {
-    const data = await client.getManagerPulse(args.company_slug, args.view, args.period);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsAge = analytics.query('age')
+  .describe('Task age distribution — how long tasks stay in each status')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/reports/project-age');
 
-  risks: async (client, args) => {
-    const data = await client.getManagerRisks(args.company_slug, args.filter, args.severity);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsActivity = analytics.query('activity')
+  .describe('Activity timeline analytics')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/reports/weekly-activity');
 
-  flow: async (client, args) => {
-    const data = await client.getReportsCumulativeFlow(args.company_slug, args.days);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsOverview = analytics.query('overview')
+  .describe('Project overview dashboard data')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/overview');
 
-  age: async (client, args) => {
-    const data = await client.getReportsProjectAge(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsHealth = analytics.query('health')
+  .describe('Sprint/project health score with recommendations')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/health');
 
-  activity: async (client, args) => {
-    const data = await client.getReportsWeeklyActivity(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsBlockers = analytics.query('blockers')
+  .describe('Blocker analysis — items blocking progress')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/blockers');
 
-  overview: async (client, args) => {
-    const data = await client.getManagerOverview(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
+export const analyticsCommandCenter = analytics.query('command_center')
+  .describe('Command center — aggregated project intelligence')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/command-center');
 
-  health: async (client, args) => {
-    const data = await client.getManagerHealth(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
-
-  blockers: async (client, args) => {
-    const data = await client.getManagerBlockers(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
-
-  command_center: async (client, args) => {
-    const data = await client.getManagerCommandCenter(args.company_slug);
-    return success(JSON.stringify(data, null, 2));
-  },
-
-  time_entries: async (client, args) => {
-    const data = await client.getManagerTimeEntries(args.company_slug, args.time_filter);
-    return success(JSON.stringify(data, null, 2));
-  },
-};
-
-// ============================================================================
-// Main Handler
-// ============================================================================
-
-export async function handleAnalyticsTool(
-  client: GitScrumClient,
-  _name: string,
-  args: Record<string, unknown>
-): Promise<ToolResponse> {
-  if (!args.company_slug) return required("company_slug");
-  
-  const report = args.report as string;
-  return executeAction(analyticsHandlers, report, client, args);
-}
+export const analyticsTimeEntries = analytics.query('time_entries')
+  .describe('Time entry analytics for a project')
+  .fromModel(AnalyticsModel, 'query')
+  .proxy('companies/manager-dashboard/time-entries');

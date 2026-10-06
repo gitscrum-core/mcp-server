@@ -1,45 +1,25 @@
 /**
- * GitScrum MCP Server - Public API
+ * Public API re-exports for @gitscrum-studio/mcp-server
  *
- * Exports for hosted/SSE deployments.
- *
- * @module @gitscrum-studio/mcp-server
+ * Re-exports core types from @vurb/core and @vurb/oauth
+ * so consumers can import directly from this package.
  */
 
-// Core client
-export { GitScrumClient } from "./client/GitScrumClient.js";
-export type { ApiResponse } from "./client/GitScrumClient.js";
+// ── Vurb Core ────────────────────────────────────────────
+export { success, error, required } from '@vurb/core';
+export type { ToolResponse } from '@vurb/core';
 
-// Tool registry
-export {
-  getAllTools,
-  routeToolCall,
-  registerModule,
-  isToolRegistered,
-  getHandler,
-  clearRegistry,
-} from "./tools/shared/toolRegistry.js";
-export type { ToolHandler, ToolModule } from "./tools/shared/toolRegistry.js";
+// ── Context ──────────────────────────────────────────────
+export { f } from './context.js';
+export type { AppContext } from './context.js';
 
-// Tool initialization
-export { initializeToolModules } from "./tools/shared/initModules.js";
+// ── API Client ───────────────────────────────────────────
+export { GitScrumClient } from './client/GitScrumClient.js';
 
-// Action handler utilities
-export {
-  success,
-  error,
-  executeAction,
-  normalizeColor,
-  resolveProjectContext,
-} from "./tools/shared/actionHandler.js";
-export type { ToolResponse, ActionHandler, ActionHandlerMap, ResponseContext } from "./tools/shared/actionHandler.js";
+// ── Auth ─────────────────────────────────────────────────
+export { DeviceAuthenticator } from './auth/DeviceAuthenticator.js';
+export { TokenManager } from './auth/TokenManager.js';
 
-// Auth
-export { TokenManager } from "./auth/TokenManager.js";
-export { DeviceAuthenticator } from "./auth/DeviceAuthenticator.js";
-export type { DeviceCodeResponse, TokenResponse } from "./auth/DeviceAuthenticator.js";
-
-// Server info
-export const SERVER_NAME = "gitscrum";
-export const SERVER_VERSION = "1.0.4";
-export const SERVER_INSTRUCTIONS = "GitScrum project management. Stateless MCP - always provide required parameters.";
+// ── Utils ────────────────────────────────────────────────
+export { resolveProjectContext, normalizeColor } from './utils/resolveProject.js';
+export type { ProjectContext } from './utils/resolveProject.js';

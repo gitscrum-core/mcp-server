@@ -1,244 +1,101 @@
 /**
- * Discussion MCP Tool
- * 
- * Uses Action Handler pattern for clean, extensible code.
- * Provides access to discussion channels, messages, and unread counts.
+ * Discussion/Chat — vurb.ts Showcase
+ *
+ * ✅ .tags('collaboration') — real-time collaboration
+ * ✅ .stale() — messages must always be fresh
+ * ✅ .invalidates() — cascades on mutation
+ * ✅ .returns(Presenter) — MVA pipeline
+ * ✅ .fromModel() — zero-boilerplate input from Models
  */
-import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import type { GitScrumClient } from "../client/GitScrumClient.js";
-import { 
-  executeAction, 
-  success, 
-  required,
-  resolveProjectContext,
-  type ActionHandlerMap,
-  type ToolResponse,
-  type ResponseContext
-} from "./shared/actionHandler.js";
 
-// ============================================================================
-// Tool Registration
-// ============================================================================
+import { f } from '../context.js';
+import { resolveProjectContext } from '../utils/resolveProject.js';
+import { ChannelPresenter, MessagePresenter } from '../presenters/index.js';
+import { ChannelModel, MessageModel } from '../models/DiscussionModel.js';
 
-export function registerDiscussionTools(): Tool[] {
-  return [
-    {
-      name: "discussion",
-      description: [
-        "Discussions & channels. Actions: all, channels, channel, messages, send, search, unread, mark_read, create_channel, update_channel.",
-        "",
-        "Workflow:",
-        "- 'all': no params needed (returns all discussions across workspaces)",
-        "- 'channels': requires company_slug + project_slug (list channels in a project)",
-        "- 'channel': requires channel_uuid (get single channel details)",
-        "- 'messages': requires channel_uuid (get messages, supports cursor pagination)",
-        "- 'send': requires channel_uuid + content (send a message)",
-        "- 'search': requires channel_uuid + q (search messages in channel)",
-        "- 'unread': requires company_slug + project_slug (unread count)",
-        "- 'mark_read': requires channel_uuid (mark channel as read)",
-        "- 'create_channel': requires name + company_slug + project_slug",
-        "- 'update_channel': requires channel_uuid + name or description",
-      ].join("\n"),
-      inputSchema: {
-        type: "object" as const,
-        properties: {
-          action: { 
-            type: "string", 
-            enum: ["all", "channels", "channel", "messages", "send", "search", "unread", "mark_read", "create_channel", "update_channel"], 
-            description: "Which operation to perform" 
-          },
-          company_slug: { 
-            type: "string", 
-            description: "Workspace identifier" 
-          },
-          project_slug: { 
-            type: "string", 
-            description: "Project identifier" 
-          },
-          channel_uuid: { 
-            type: "string", 
-            description: "Channel UUID for: channel, messages, send, search, mark_read, update_channel" 
-          },
-          content: { 
-            type: "string", 
-            description: "Message text for send action" 
-          },
-          parent_id: { 
-            type: "string", 
-            description: "Parent message ID for thread replies (optional for send)" 
-          },
-          q: { 
-            type: "string", 
-            description: "Search query for search action" 
-          },
-          name: { 
-            type: "string", 
-            description: "Channel name for create_channel/update_channel" 
-          },
-          description: { 
-            type: "string", 
-            description: "Channel description (optional)" 
-          },
-          is_private: { 
-            type: "boolean", 
-            description: "Channel visibility (optional for create_channel)" 
-          },
-          include_archived: { 
-            type: "boolean", 
-            description: "Include archived channels (optional for channels)" 
-          },
-          before_id: { 
-            type: "string", 
-            description: "Cursor for older messages (optional for messages)" 
-          },
-          after_id: { 
-            type: "string", 
-            description: "Cursor for newer messages (optional for messages)" 
-          },
-          limit: { 
-            type: "number", 
-            description: "Max results (optional)" 
-          },
-        },
-        required: ["action"],
-      },
-      annotations: { title: "Discussions", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-    },
-  ];
-}
+const discussion = f.router('discussion')
+  .describe('Team discussions and messaging channels')
+  .tags('collaboration');
 
-// ============================================================================
-// Types
-// ============================================================================
+export const listChannels = discussion.query('channels')
+  .describe('List discussion channels in a project')
+  .fromModel(ChannelModel, 'query')
+  .returns(ChannelPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list');
+    return await ctx.client.getDiscussionChannels(resolved.project_slug, resolved.company_slug);
+  });
 
-interface DiscussionArgs {
-  action: string;
-  company_slug?: string;
-  project_slug?: string;
-  channel_uuid?: string;
-  content?: string;
-  parent_id?: string;
-  q?: string;
-  name?: string;
-  description?: string;
-  is_private?: boolean;
-  include_archived?: boolean;
-  before_id?: string;
-  after_id?: string;
-  limit?: number;
-}
-
-// ============================================================================
-// Action Handlers
-// ============================================================================
-
-const discussionHandlers: ActionHandlerMap<DiscussionArgs> = {
-  all: async (client) => {
-    const data = await client.getAllDiscussions();
-    return success(JSON.stringify(data, null, 2));
-  },
-
-  channels: async (client, args) => {
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
+export const channelMessages = discussion.query('messages')
+  .describe('Get messages from a channel with cursor-based pagination')
+  .stale()
+  .fromModel(MessageModel, 'query')
+  .returns(MessagePresenter)
+  .handle(async (input, ctx) => {
+    return await ctx.client.getDiscussionMessages(input.channel_uuid, {
+      before_id: input.cursor,
+      limit: input.limit,
     });
-    if (!resolved) return required("company_slug + project_slug");
-    
-    const channels = await client.getDiscussionChannels(resolved.project_slug, resolved.company_slug, args.include_archived);
-    const ctx: ResponseContext = { company_slug: resolved.company_slug, project_slug: resolved.project_slug };
-    return success(JSON.stringify(channels, null, 2), ctx);
-  },
+  });
 
-  channel: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    const channel = await client.getDiscussionChannel(args.channel_uuid);
-    return success(JSON.stringify(channel, null, 2));
-  },
+export const sendMessage = discussion.mutation('send')
+  .describe('Send a message to a channel')
+  .invalidates('discussion.*')
+  .fromModel(MessageModel, 'create')
+  .handle(async (input, ctx) => {
+    const message = await ctx.client.sendDiscussionMessage(
+      input.channel_uuid, { content: input.content },
+    );
+    return { sent: true, message };
+  });
 
-  messages: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    const messages = await client.getDiscussionMessages(args.channel_uuid, {
-      before_id: args.before_id,
-      after_id: args.after_id,
-      limit: args.limit,
-    });
-    return success(JSON.stringify(messages, null, 2));
-  },
+export const searchMessages = discussion.query('search')
+  .describe('Search discussion messages')
+  .fromModel(MessageModel, 'search')
+  .returns(MessagePresenter)
+  .handle(async (input, ctx) => {
+    return await ctx.client.searchDiscussionMessages(input.channel_uuid, input.q, input.limit);
+  });
 
-  send: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    if (!args.content) return required("content");
-    const message = await client.sendDiscussionMessage(args.channel_uuid, {
-      content: args.content,
-      parent_id: args.parent_id,
-    });
-    return success(JSON.stringify({ sent: true, message }, null, 2));
-  },
+export const unreadCount = discussion.query('unread')
+  .describe('Get unread message counts')
+  .stale()
+  .fromModel(ChannelModel, 'query')
+  .handle(async (input, ctx) => {
+    return await ctx.client.getDiscussionUnreadCount(input.project_slug, input.company_slug);
+  });
 
-  search: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    if (!args.q) return required("q (search query)");
-    const results = await client.searchDiscussionMessages(args.channel_uuid, args.q, args.limit);
-    return success(JSON.stringify(results, null, 2));
-  },
-
-  unread: async (client, args) => {
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("company_slug + project_slug");
-    
-    const count = await client.getDiscussionUnreadCount(resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { company_slug: resolved.company_slug, project_slug: resolved.project_slug };
-    return success(JSON.stringify(count, null, 2), ctx);
-  },
-
-  mark_read: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    await client.markDiscussionChannelRead(args.channel_uuid);
-    return success(JSON.stringify({ marked_read: true, channel_uuid: args.channel_uuid }, null, 2));
-  },
-
-  create_channel: async (client, args) => {
-    if (!args.name) return required("name");
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("company_slug + project_slug");
-    
-    const channel = await client.createDiscussionChannel({
-      name: args.name,
+export const createChannel = discussion.mutation('create_channel')
+  .describe('Create a new discussion channel')
+  .invalidates('discussion.*')
+  .fromModel(ChannelModel, 'create')
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list');
+    const channel = await ctx.client.createDiscussionChannel(ChannelModel.toApi({
+      title: input.title,
       project_slug: resolved.project_slug,
       company_slug: resolved.company_slug,
-      description: args.description,
-      is_private: args.is_private,
+      description: input.description,
+    }) as { name: string; project_slug: string; company_slug: string; description?: string });
+    return { created: true, channel };
+  });
+
+export const updateChannel = discussion.action('update_channel')
+  .describe('Update a discussion channel')
+  .idempotent()
+  .invalidates('discussion.*')
+  .fromModel(ChannelModel, 'update')
+  .handle(async (input, ctx) => {
+    const data = ChannelModel.toApi({
+      title: input.title,
+      description: input.description,
     });
-    const ctx: ResponseContext = { company_slug: resolved.company_slug, project_slug: resolved.project_slug };
-    return success(JSON.stringify({ created: true, channel }, null, 2), ctx);
-  },
-
-  update_channel: async (client, args) => {
-    if (!args.channel_uuid) return required("channel_uuid");
-    const data: { name?: string; description?: string } = {};
-    if (args.name) data.name = args.name;
-    if (args.description) data.description = args.description;
-    const channel = await client.updateDiscussionChannel(args.channel_uuid, data);
-    return success(JSON.stringify({ updated: true, channel }, null, 2));
-  },
-};
-
-// ============================================================================
-// Main Handler
-// ============================================================================
-
-export async function handleDiscussionTool(
-  client: GitScrumClient,
-  _name: string,
-  args: Record<string, unknown> = {}
-): Promise<ToolResponse> {
-  const action = args.action as string;
-  return executeAction(discussionHandlers, action, client, args);
-}
+    await ctx.client.updateDiscussionChannel(input.channel_uuid, data);
+    return { updated: true, channel_uuid: input.channel_uuid };
+  });

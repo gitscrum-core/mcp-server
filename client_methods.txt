@@ -1,0 +1,163 @@
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:60:  constructor() {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:75:  setToken(token: string): void {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:82:  isAuthenticated(): boolean {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:89:  async logout(): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:274:  async getMe(): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:287:  async getWorkspaces(options?: { perPage?: number; page?: number; search?: string }): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:301:  async findWorkspaceByName(name: string): Promise<{ slug: string; name: string } | null> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:320:  async getWorkspace(slug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:328:  async getWorkspaceStats(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:340:  async createProject(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:365:  async getProjects(companySlug: string, options?: { status?: string; perPage?: number }): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:381:  async findProjectByName(name: string, companySlug?: string): Promise<{
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:430:  async getProject(projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:440:  async getProjectWorkflows(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:451:  async createWorkflow(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:470:  async updateWorkflow(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:490:  async getProjectTypes(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:501:  async getProjectEfforts(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:512:  async getProjectLabels(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:524:  async getProjectMembers(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:535:  async getProjectStats(projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:549:  async getMyTasks(perPage: number = 100): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:559:  async getNotifications(): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:567:  async getNotificationCount(): Promise<number> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:575:  async getTodayTasks(limit: number = 50): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:585:  async getTask(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:593:  async getProjectTasks(projectSlug: string, companySlug: string, perPage: number = 100): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:607:  async searchTasks(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:695:  async createTask(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:722:  async updateTask(uuid: string, data: Record<string, unknown>): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:730:  async completeTask(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:738:  async getSubTasks(taskUuid: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:750:  async getSprints(projectSlug: string, companySlug: string): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:761:  async getAllSprints(): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:769:  async getSprint(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:780:  async getSprintKPIs(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:791:  async createSprint(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:815:  async updateSprint(
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:843:  async getActiveTimer(companySlug?: string): Promise<unknown | null> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:853:  async startTimer(taskUuid: string, description?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:866:  async stopTimer(timeTrackingId: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:876:  async getTimeLogs(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:891:  async getUserStories(projectSlug: string, companySlug: string): Promise<ApiResponse<unknown[]>> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:902:  async getUserStory(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:913:  async createUserStory(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:929:  async updateUserStory(slug: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:949:  async getWikiPages(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:960:  async getWikiPage(uuid: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:971:  async createWikiPage(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:985:  async updateWikiPage(uuid: string, projectSlug: string, companySlug: string, data: { title?: string; content?: string }): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1007:  async search(query: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1037:  async getNotes(companySlug?: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1054:  async getNote(uuid: string, companySlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1064:  async createNote(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1078:  async updateNote(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1091:  async toggleNoteShare(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1099:  async getNoteRevisions(uuid: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1113:  async getNoteFolders(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1123:  async createNoteFolder(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1134:  async updateNoteFolder(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1144:  async moveNoteToFolder(noteUuid: string, folderUuid: string | null): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1159:  async getClients(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1169:  async getClient(uuid: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1179:  async getClientStats(uuid: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1189:  async createClient(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1210:  async updateClient(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1234:  async getInvoices(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1248:  async getInvoice(uuid: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1258:  async getInvoiceStats(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1268:  async createInvoice(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1282:  async updateInvoice(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1293:  async issueInvoice(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1301:  async sendInvoice(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1309:  async markInvoicePaid(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1321:  async getProposals(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1335:  async getProposal(uuid: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1345:  async getProposalStats(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1355:  async createProposal(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1371:  async updateProposal(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1384:  async sendProposal(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1392:  async approveProposal(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1400:  async rejectProposal(uuid: string, reason?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1408:  async convertProposalToProject(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1420:  async getClientFlowOverview(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1430:  async getRevenuePipeline(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1440:  async getClientsAtRisk(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1450:  async getPendingApprovals(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1460:  async getProjectsHealth(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1470:  async getActionableInsights(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1480:  async getClientLeaderboard(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1490:  async getClientFlowAnalytics(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1504:  async getCrossWorkspaceInvoices(perPage?: number, page?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1515:  async getCrossWorkspaceProposals(perPage?: number, page?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1526:  async getCrossWorkspaceClients(perPage?: number, page?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1537:  async getCrossWorkspaceChangeRequests(perPage?: number, page?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1552:  async getWorkspaceLabels(companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1562:  async createLabel(companySlug: string, data: { title: string; color: string }): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1570:  async updateLabel(labelSlug: string, companySlug: string, data: { title?: string; color?: string }): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1577:  async attachLabelToProject(labelSlug: string, projectSlug: string, companySlug: string): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1586:  async detachLabelFromProject(labelSlug: string, projectSlug: string, companySlug: string): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1593:  async toggleLabelOnTask(taskUuid: string, labelSlug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1605:  async createTaskType(projectSlug: string, companySlug: string, data: { title: string; color: string }): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1616:  async updateTaskType(typeId: number, projectSlug: string, companySlug: string, data: { title?: string; color?: string }): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1623:  async assignTypeToTask(taskUuid: string, typeId: number, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1637:  async getStandupSummary(companySlug: string, projectSlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1647:  async getStandupCompletedYesterday(companySlug: string, projectSlug?: string, date?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1658:  async getStandupBlockers(companySlug: string, projectSlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1668:  async getStandupTeamStatus(companySlug: string, projectSlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1678:  async getStandupStuckTasks(companySlug: string, projectSlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1688:  async getStandupWeeklyDigest(companySlug: string, projectSlug?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1698:  async getStandupContributors(companySlug: string, projectSlug?: string, period?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1713:  async getTaskComments(taskUuid: string, companySlug: string, projectSlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1726:  async addTaskComment(taskUuid: string, text: string, companySlug: string, projectSlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1741:  async updateComment(commentId: number, text: string): Promise<void> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1752:  async getManagerPulse(companySlug: string, view?: string, period?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1763:  async getManagerRisks(companySlug: string, filter?: string, severity?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1774:  async getReportsCumulativeFlow(companySlug: string, days?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1784:  async getReportsProjectAge(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1794:  async getReportsWeeklyActivity(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1808:  async getAllWorkspacesUserStories(perPage?: number, page?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1823:  async getSprintStats(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1834:  async getSprintReports(slug: string, projectSlug: string, companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1851:  async getSprintProgress(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1862:  async getSprintMetrics(slug: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1877:  async getTaskByCode(taskCode: string, projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1888:  async duplicateTask(taskUuid: string, projectSlug: string, companySlug: string, workflowId?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1901:  async moveTask(taskUuid: string, projectSlug: string, companySlug: string, newProjectSlug: string, newWorkflowId: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1916:  async searchWikiPages(projectSlug: string, companySlug: string, query: string, limit?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1934:  async getTimeTrackingAnalytics(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1954:  async getTimeTrackingTeam(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1968:  async getTimeTrackingReports(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:1986:  async getTimeTrackingProductivity(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2000:  async getTimeTrackingTimeline(companySlug: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2018:  async getManagerOverview(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2028:  async getManagerHealth(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2038:  async getManagerBlockers(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2048:  async getManagerCommandCenter(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2058:  async getManagerTimeEntries(companySlug: string, filter?: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2072:  async getAllDiscussions(): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2080:  async getDiscussionGlobalUnreadCount(): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2088:  async getDiscussionChannels(projectSlug: string, companySlug: string, includeArchived?: boolean): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2101:  async getDiscussionChannel(uuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2109:  async createDiscussionChannel(data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2123:  async updateDiscussionChannel(uuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2134:  async getDiscussionMessages(channelUuid: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2150:  async sendDiscussionMessage(channelUuid: string, data: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2161:  async searchDiscussionMessages(channelUuid: string, query: string, limit?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2171:  async getDiscussionUnreadCount(projectSlug: string, companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2182:  async markDiscussionChannelRead(channelUuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2194:  async getActivityFeed(): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2202:  async getActivityFeedByUser(username: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2210:  async getNotificationFeed(): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2218:  async getActivities(options: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2238:  async getTaskWorkflowHistory(taskUuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2250:  async getBudgetProjectsAtRisk(companySlug: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2260:  async getBudgetOverview(projectUuid: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2278:  async getBudgetConsumption(projectUuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2286:  async getBudgetBurnDown(projectUuid: string, options?: {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2300:  async getBudgetAlerts(projectUuid: string): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2308:  async getBudgetEvents(projectUuid: string, limit?: number): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2322:  async getEpics(projectSlug: string, companySlug: string): Promise<unknown[]> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2333:  async createEpic(projectSlug: string, companySlug: string, data: { title: string; description?: string; color?: string }): Promise<unknown> {
+C:\Users\renat\Projects\GitScrum\mcp\src\client\GitScrumClient.ts:2344:  async updateEpic(

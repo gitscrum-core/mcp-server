@@ -1,323 +1,144 @@
 /**
- * Sprint MCP Tool (Consolidated)
- * 
- * Uses Action Handler pattern for clean, extensible code.
+ * Sprint Management — vurb.ts Showcase
+ *
+ * ✅ .tags('core', 'planning')
+ * ✅ .returns(SprintPresenter) on all queries
+ * ✅ .invalidates() on mutations — cascades to task.*
+ * ✅ .instructions() — AI-first guidance
+ * ✅ .fromModel() — zero-boilerplate input from Models
+ * ✅ f.error() — self-healing recovery
  */
-import type { Tool } from "@modelcontextprotocol/sdk/types.js";
-import type { GitScrumClient } from "../client/GitScrumClient.js";
-import { 
-  executeAction, 
-  success, 
-  required,
-  error,
-  resolveProjectContext,
-  normalizeColor,
-  type ActionHandlerMap,
-  type ToolResponse,
-  type ResponseContext
-} from "./shared/actionHandler.js";
 
-// ============================================================================
-// Tool Registration
-// ============================================================================
+import { f } from '../context.js';
+import { resolveProjectContext } from '../utils/resolveProject.js';
+import { SprintPresenter } from '../presenters/index.js';
+import { SprintModel } from '../models/SprintModel.js';
 
-export function registerSprintTools(): Tool[] {
-  return [
-    {
-      name: "sprint",
-      description: [
-        "Sprint management. Actions: list, all, get, kpis, stats, reports, progress, metrics, create, update.",
-        "",
-        "Workflow:",
-        "- 'list': requires company_slug + project_slug (returns sprints with their slug)",
-        "- 'all': no params needed (returns all sprints across workspaces)",
-        "- 'get'/'kpis'/'stats'/'progress'/'metrics': requires slug (sprint slug from 'list' response) + company_slug + project_slug",
-        "- 'reports': requires slug + company_slug + project_slug. Optional: resource (burndown, burnup, performance, types, efforts)",
-        "- 'create': requires title + company_slug + project_slug. Dates default to today → +7 days",
-        "- 'update': requires slug + company_slug + project_slug",
-      ].join("\n"),
-      inputSchema: {
-        type: "object" as const,
-        properties: {
-          action: { 
-            type: "string", 
-            enum: ["list", "all", "get", "kpis", "stats", "reports", "progress", "metrics", "create", "update"], 
-            description: "Which operation to perform" 
-          },
-          project_slug: { 
-            type: "string", 
-            description: "Project identifier. Required for: list, get, kpis, create, update, delete" 
-          },
-          company_slug: { 
-            type: "string", 
-            description: "Workspace identifier. Required for: list, get, kpis, create, update, delete" 
-          },
-          slug: { 
-            type: "string", 
-            description: "Existing sprint's slug. Required for: get, kpis, update, delete. NOT for create" 
-          },
-          title: { 
-            type: "string", 
-            description: "Sprint name. Required for: create" 
-          },
-          description: { 
-            type: "string", 
-            description: "Sprint description in markdown (optional)" 
-          },
-          date_start: { 
-            type: "string", 
-            description: "Start date YYYY-MM-DD (default: today)" 
-          },
-          date_finish: { 
-            type: "string", 
-            description: "End date YYYY-MM-DD (default: today + 7 days)" 
-          },
-          color: { 
-            type: "string", 
-            description: "Hex color without # e.g. 'FF5733' (optional)" 
-          },
-          is_private: { 
-            type: "boolean", 
-            description: "Sprint visibility (optional)" 
-          },
-          close_on_finish: { 
-            type: "boolean", 
-            description: "Auto-close when end date reached (optional)" 
-          },
-          resource: { 
-            type: "string", 
-            description: "For 'reports': filter to single chart (burndown, burnup, performance, types, efforts, member_distribution, task_type_distribution)" 
-          },
-        },
-        required: ["action"],
-      },
-      annotations: { title: "Sprints", readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
-    },
-  ];
-}
+const sprint = f.router('sprint')
+  .describe('Sprint/iteration management — list, create, update, KPIs, reports')
+  .tags('core', 'planning');
 
-// ============================================================================
-// Types
-// ============================================================================
+// ── Queries ──────────────────────────────────────────────
 
-interface SprintArgs {
-  action: string;
-  project_slug?: string;
-  company_slug?: string;
-  slug?: string;
-  title?: string;
-  description?: string;
-  date_start?: string;
-  date_finish?: string;
-  color?: string;
-  is_private?: boolean;
-  close_on_finish?: boolean;
-  resource?: string;
-}
+export const listSprints = sprint.query('list')
+  .describe('List all sprints in a project')
+  .instructions('Use to get sprint overview. Returns all sprints with progress percentage.')
+  .fromModel(SprintModel, 'query')
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprints(resolved.project_slug, resolved.company_slug);
+  });
 
-// ============================================================================
-// Action Handlers
-// ============================================================================
+export const getSprint = sprint.query('get')
+  .describe('Get sprint details')
+  .fromModel(SprintModel, 'query')
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprint(input.sprint_slug, resolved.project_slug, resolved.company_slug);
+  });
 
-const sprintHandlers: ActionHandlerMap<SprintArgs> = {
-  list: async (client, args) => {
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
+export const sprintKpi = sprint.query('kpi')
+  .describe('Get sprint KPI metrics')
+  .instructions('Use for sprint health checks. Returns velocity, burndown, and completion rate.')
+  .fromModel(SprintModel, 'query')
+  .stale()
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprintKPIs(input.sprint_slug, resolved.project_slug, resolved.company_slug);
+  });
+
+export const sprintReport = sprint.query('report')
+  .describe('Get sprint completion report')
+  .fromModel(SprintModel, 'query')
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprintReports(input.sprint_slug, resolved.project_slug, resolved.company_slug);
+  });
+
+export const sprintProgress = sprint.query('progress')
+  .describe('Get sprint progress and burndown data')
+  .stale()
+  .fromModel(SprintModel, 'query')
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprintProgress(input.sprint_slug, resolved.project_slug, resolved.company_slug);
+  });
+
+export const sprintStats = sprint.query('stats')
+  .describe('Get sprint statistics and metrics')
+  .fromModel(SprintModel, 'query')
+  .returns(SprintPresenter)
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.getSprintStats(input.sprint_slug, resolved.project_slug, resolved.company_slug);
+  });
+
+// ── Mutations ────────────────────────────────────────────
+
+export const createSprint = sprint.mutation('create')
+  .describe('Create a new sprint')
+  .invalidates('sprint.*', 'analytics.*')
+  .fromModel(SprintModel, 'create')
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    return await ctx.client.createSprint(resolved.project_slug, resolved.company_slug, SprintModel.toApi({
+      title: input.title,
+      start_date: input.start_date,
+      end_date: input.end_date,
+      description: input.description,
+    }) as { title: string; date_start: string; date_finish: string; description?: string });
+  });
+
+export const updateSprint = sprint.action('update')
+  .describe('Update sprint details')
+  .idempotent()
+  .invalidates('sprint.*', 'task.*')
+  .fromModel(SprintModel, 'update')
+  .handle(async (input, ctx) => {
+    const resolved = await resolveProjectContext(ctx.client, input);
+    if (!resolved) return f.error('MISSING_REQUIRED_FIELD', 'company_slug is required')
+      .suggest('Provide company_slug or use workspace.list to find it')
+      .actions('workspace.list')
+      .retryAfter(0);
+    const data = SprintModel.toApi({
+      title: input.title,
+      start_date: input.start_date,
+      end_date: input.end_date,
+      description: input.description,
     });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const sprints = await client.getSprints(resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { company_slug: resolved.company_slug, project_slug: resolved.project_slug };
-    return success(JSON.stringify(sprints, null, 2), ctx);
-  },
-
-  all: async (client) => {
-    const sprints = await client.getAllSprints();
-    return success(JSON.stringify(sprints, null, 2));
-  },
-
-  get: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const sprint = await client.getSprint(args.slug, resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(sprint, null, 2), ctx);
-  },
-
-  kpis: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const kpis = await client.getSprintKPIs(args.slug, resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(kpis, null, 2), ctx);
-  },
-
-  stats: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const stats = await client.getSprintStats(args.slug, resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(stats, null, 2), ctx);
-  },
-
-  reports: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const reports = await client.getSprintReports(args.slug, resolved.project_slug, resolved.company_slug, {
-      resource: args.resource,
-    });
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(reports, null, 2), ctx);
-  },
-
-  progress: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const progress = await client.getSprintProgress(args.slug, resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(progress, null, 2), ctx);
-  },
-
-  metrics: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("project_slug (or company_slug + project_slug)");
-    
-    const metrics = await client.getSprintMetrics(args.slug, resolved.project_slug, resolved.company_slug);
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify(metrics, null, 2), ctx);
-  },
-
-  create: async (client, args) => {
-    if (!args.title) return required("title");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("company_slug and project_slug");
-    
-    const data: Record<string, unknown> = { title: args.title };
-    if (args.description) data.description = args.description;
-    if (args.date_start) data.date_start = args.date_start;
-    if (args.date_finish) data.date_finish = args.date_finish;
-    if (args.color) data.color = normalizeColor(args.color);
-    if (args.is_private !== undefined) data.is_private = args.is_private;
-    if (args.close_on_finish !== undefined) data.close_on_finish = args.close_on_finish;
-    
-    const sprint = await client.createSprint(
-      resolved.project_slug,
-      resolved.company_slug,
-      data as Parameters<typeof client.createSprint>[2]
-    );
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug 
-    };
-    return success(JSON.stringify({ created: true, sprint }, null, 2), ctx);
-  },
-
-  update: async (client, args) => {
-    if (!args.slug) return required("slug");
-    
-    const resolved = await resolveProjectContext(client, { 
-      company_slug: args.company_slug, 
-      project_slug: args.project_slug 
-    });
-    if (!resolved) return required("company_slug and project_slug");
-    
-    const data: Record<string, unknown> = {};
-    if (args.title) data.title = args.title;
-    if (args.description) data.description = args.description;
-    if (args.date_start) data.date_start = args.date_start;
-    if (args.date_finish) data.date_finish = args.date_finish;
-    if (args.color) data.color = normalizeColor(args.color);
-    if (args.is_private !== undefined) data.is_private = args.is_private;
-    if (args.close_on_finish !== undefined) data.close_on_finish = args.close_on_finish;
-    
-    await client.updateSprint(
-      args.slug,
-      resolved.project_slug,
-      resolved.company_slug,
-      data as Parameters<typeof client.updateSprint>[3]
-    );
-    const ctx: ResponseContext = { 
-      company_slug: resolved.company_slug, 
-      project_slug: resolved.project_slug,
-      sprint_slug: args.slug 
-    };
-    return success(JSON.stringify({ updated: true, slug: args.slug }, null, 2), ctx);
-  },
-};
-
-// ============================================================================
-// Main Handler
-// ============================================================================
-
-export async function handleSprintTool(
-  client: GitScrumClient,
-  _name: string,
-  args: Record<string, unknown> = {}
-): Promise<ToolResponse> {
-  const action = args.action as string;
-  return executeAction(sprintHandlers, action, client, args);
-}
+    await ctx.client.updateSprint(input.sprint_slug, resolved.project_slug, resolved.company_slug, data);
+    return { updated: true, sprint_slug: input.sprint_slug };
+  });

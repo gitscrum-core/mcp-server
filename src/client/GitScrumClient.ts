@@ -1414,15 +1414,7 @@ export class GitScrumClient {
   // CLIENTFLOW - DASHBOARD
   // ============================================================================
 
-  /**
-   * Get ClientFlow dashboard overview
-   */
-  async getClientFlowOverview(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("client-flow/dashboard/overview", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
+  // getClientFlowOverview — removed: now accessed via .proxy() in tools
 
   /**
    * Get revenue pipeline
@@ -1520,16 +1512,7 @@ export class GitScrumClient {
     return response;
   }
 
-  /**
-   * Get clients overview across all workspaces
-   */
-  async getCrossWorkspaceClients(perPage?: number, page?: number): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = {};
-    if (perPage) params.per_page = perPage;
-    if (page) params.page = page;
-    const response = await this.get<unknown>("client-flow/all-workspaces/clients", params);
-    return response;
-  }
+  // getCrossWorkspaceClients — removed: now accessed via .proxy() in tools
 
   /**
    * Get change requests overview across all workspaces
@@ -1628,80 +1611,8 @@ export class GitScrumClient {
   }
 
   // ============================================================================
-  // STANDUP / DAILY
+  // STANDUP / DAILY — removed: now accessed via .proxy() in tools
   // ============================================================================
-
-  /**
-   * Get team standup summary - completed yesterday, in progress, blocked, time tracked
-   */
-  async getStandupSummary(companySlug: string, projectSlug?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    const response = await this.get<{ data: unknown }>("companies/standup/summary", params);
-    return response.data;
-  }
-
-  /**
-   * Get tasks completed on a specific date (yesterday by default)
-   */
-  async getStandupCompletedYesterday(companySlug: string, projectSlug?: string, date?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    if (date) params.date = date;
-    const response = await this.get<{ data: unknown }>("companies/standup/completed-yesterday", params);
-    return response.data;
-  }
-
-  /**
-   * Get active blockers - tasks that are currently blocked
-   */
-  async getStandupBlockers(companySlug: string, projectSlug?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    const response = await this.get<{ data: unknown }>("companies/standup/blockers", params);
-    return response.data;
-  }
-
-  /**
-   * Get team status - current status of each team member with their active tasks
-   */
-  async getStandupTeamStatus(companySlug: string, projectSlug?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    const response = await this.get<{ data: unknown }>("companies/standup/team-status", params);
-    return response.data;
-  }
-
-  /**
-   * Get stuck tasks - tasks in progress for longer than expected
-   */
-  async getStandupStuckTasks(companySlug: string, projectSlug?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    const response = await this.get<{ data: unknown }>("companies/standup/stuck-tasks", params);
-    return response.data;
-  }
-
-  /**
-   * Get weekly digest - summary of the week's activity
-   */
-  async getStandupWeeklyDigest(companySlug: string, projectSlug?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    const response = await this.get<{ data: unknown }>("companies/standup/weekly-digest", params);
-    return response.data;
-  }
-
-  /**
-   * Get contributors stats - team member contributions over time
-   */
-  async getStandupContributors(companySlug: string, projectSlug?: string, period?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (projectSlug) params.project_slug = projectSlug;
-    if (period) params.period = period;
-    const response = await this.get<{ data: unknown }>("companies/standup/contributors", params);
-    return response.data;
-  }
 
   // ============================================================================
   // COMMENTS
@@ -1743,60 +1654,8 @@ export class GitScrumClient {
   }
 
   // ============================================================================
-  // ANALYTICS / MANAGER DASHBOARD
+  // ANALYTICS / MANAGER DASHBOARD — removed: now accessed via .proxy() in tools
   // ============================================================================
-
-  /**
-   * Get manager pulse - real-time workspace health metrics
-   */
-  async getManagerPulse(companySlug: string, view?: string, period?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (view) params.view = view;
-    if (period) params.period = period;
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/pulse", params);
-    return response.data;
-  }
-
-  /**
-   * Get manager risks - risk detection and analysis
-   */
-  async getManagerRisks(companySlug: string, filter?: string, severity?: string): Promise<unknown> {
-    const params: Record<string, string> = { company_slug: companySlug };
-    if (filter) params.filter = filter;
-    if (severity) params.severity = severity;
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/risks", params);
-    return response.data;
-  }
-
-  /**
-   * Get cumulative flow report - daily snapshot of tasks by status
-   */
-  async getReportsCumulativeFlow(companySlug: string, days?: number): Promise<unknown> {
-    const params: Record<string, string | number> = { company_slug: companySlug };
-    if (days) params.days = days;
-    const response = await this.get<{ data: unknown }>("companies/reports/cumulative-flow", params);
-    return response.data;
-  }
-
-  /**
-   * Get project age report - project age vs completion percentage
-   */
-  async getReportsProjectAge(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/reports/project-age", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get weekly activity report - activity by project over last 5 weeks
-   */
-  async getReportsWeeklyActivity(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/reports/weekly-activity", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
 
   // ============================================================================
   // USER STORIES - CROSS-WORKSPACE
@@ -1925,142 +1784,12 @@ export class GitScrumClient {
   }
 
   // ============================================================================
-  // TIME TRACKING - ANALYTICS
+  // TIME TRACKING ANALYTICS — removed: now accessed via .proxy() in tools
   // ============================================================================
 
-  /**
-   * Get time tracking analytics
-   */
-  async getTimeTrackingAnalytics(companySlug: string, options?: {
-    project_slug?: string;
-    period?: string;
-    start?: string;
-    end?: string;
-    users?: string;
-  }): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (options?.project_slug) params.project_slug = options.project_slug;
-    if (options?.period) params.period = options.period;
-    if (options?.start) params.start = options.start;
-    if (options?.end) params.end = options.end;
-    if (options?.users) params.users = options.users;
-    const response = await this.get<{ data: unknown }>("time-trackings/analytics", params);
-    return response.data;
-  }
-
-  /**
-   * Get time tracking team stats
-   */
-  async getTimeTrackingTeam(companySlug: string, options?: {
-    project_slug?: string;
-    period?: string;
-  }): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (options?.project_slug) params.project_slug = options.project_slug;
-    if (options?.period) params.period = options.period;
-    const response = await this.get<{ data: unknown }>("time-trackings/team", params);
-    return response.data;
-  }
-
-  /**
-   * Get time tracking reports
-   */
-  async getTimeTrackingReports(companySlug: string, options?: {
-    project_slug?: string;
-    period?: string;
-    report_type?: string;
-    hourly_rate?: number;
-  }): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (options?.project_slug) params.project_slug = options.project_slug;
-    if (options?.period) params.period = options.period;
-    if (options?.report_type) params.report_type = options.report_type;
-    if (options?.hourly_rate) params.hourly_rate = options.hourly_rate;
-    const response = await this.get<{ data: unknown }>("time-trackings/reports", params);
-    return response.data;
-  }
-
-  /**
-   * Get time tracking productivity
-   */
-  async getTimeTrackingProductivity(companySlug: string, options?: {
-    project_slug?: string;
-    period?: string;
-  }): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (options?.project_slug) params.project_slug = options.project_slug;
-    if (options?.period) params.period = options.period;
-    const response = await this.get<{ data: unknown }>("time-trackings/productivity", params);
-    return response.data;
-  }
-
-  /**
-   * Get time tracking timeline
-   */
-  async getTimeTrackingTimeline(companySlug: string, options?: {
-    project_slug?: string;
-    period?: string;
-  }): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (options?.project_slug) params.project_slug = options.project_slug;
-    if (options?.period) params.period = options.period;
-    const response = await this.get<{ data: unknown }>("time-trackings/timeline", params);
-    return response.data;
-  }
-
   // ============================================================================
-  // MANAGER DASHBOARD - ADDITIONAL REPORTS
+  // MANAGER DASHBOARD ADDITIONAL — removed: now accessed via .proxy() in tools
   // ============================================================================
-
-  /**
-   * Get manager dashboard overview
-   */
-  async getManagerOverview(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/overview", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get manager dashboard health
-   */
-  async getManagerHealth(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/health", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get manager dashboard blockers
-   */
-  async getManagerBlockers(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/blockers", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get manager command center
-   */
-  async getManagerCommandCenter(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/command-center", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
-
-  /**
-   * Get manager dashboard time entries
-   */
-  async getManagerTimeEntries(companySlug: string, filter?: string): Promise<unknown> {
-    const params: Record<string, string | number | boolean> = { company_slug: companySlug };
-    if (filter) params.filter = filter;
-    const response = await this.get<{ data: unknown }>("companies/manager-dashboard/time-entries", params);
-    return response.data;
-  }
 
   // ============================================================================
   // DISCUSSIONS
@@ -2244,15 +1973,7 @@ export class GitScrumClient {
   // BUDGET
   // ============================================================================
 
-  /**
-   * Get projects at budget risk
-   */
-  async getBudgetProjectsAtRisk(companySlug: string): Promise<unknown> {
-    const response = await this.get<{ data: unknown }>("budget/projects-at-risk", {
-      company_slug: companySlug,
-    });
-    return response.data;
-  }
+  // getBudgetProjectsAtRisk — removed: now accessed via .proxy() in tools
 
   /**
    * Get project budget overview
